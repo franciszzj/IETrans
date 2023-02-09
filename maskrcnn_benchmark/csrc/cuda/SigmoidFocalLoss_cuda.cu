@@ -5,11 +5,13 @@
 #include <ATen/ATen.h>
 #include <ATen/cuda/CUDAContext.h>
 
-#include <THC/THC.h>
+// #include <THC/THC.h>
 #include <THC/THCAtomics.cuh>
 #include <THC/THCDeviceUtils.cuh>
 
 #include <cfloat>
+
+#include "common.hpp"
 
 // TODO make it in a common file
 #define CUDA_1D_KERNEL_LOOP(i, n)                            \
@@ -122,7 +124,7 @@ at::Tensor SigmoidFocalLoss_forward_cuda(
   dim3 block(512);
 
   if (losses.numel() == 0) {
-    THCudaCheck(cudaGetLastError());
+    AT_CUDA_CHECK(cudaGetLastError());
     return losses;
   }
 
@@ -137,7 +139,7 @@ at::Tensor SigmoidFocalLoss_forward_cuda(
 	 num_samples,
          losses.data<scalar_t>());
   });
-  THCudaCheck(cudaGetLastError());
+  AT_CUDA_CHECK(cudaGetLastError());
   return losses;   
 }	
 
@@ -166,7 +168,7 @@ at::Tensor SigmoidFocalLoss_backward_cuda(
   dim3 block(512);
 
   if (d_logits.numel() == 0) {
-    THCudaCheck(cudaGetLastError());
+    AT_CUDA_CHECK(cudaGetLastError());
     return d_logits;
   }
 
@@ -183,7 +185,7 @@ at::Tensor SigmoidFocalLoss_backward_cuda(
          d_logits.data<scalar_t>());
   });
 
-  THCudaCheck(cudaGetLastError());
+  AT_CUDA_CHECK(cudaGetLastError());
   return d_logits;   
 }	
 
