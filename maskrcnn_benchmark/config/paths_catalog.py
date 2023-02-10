@@ -6,7 +6,7 @@ import copy
 
 
 class DatasetCatalog(object):
-    DATA_DIR = "./data/"
+    DATA_DIR = "./datasets/"
     DATASETS = {
         "coco_2017_train": {
             "img_dir": "coco/train2017",

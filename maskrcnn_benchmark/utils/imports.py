@@ -1,4 +1,5 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
+import sys
 import torch
 
 if sys.version_info[0] == 3 and sys.version_info[1] >= 7:

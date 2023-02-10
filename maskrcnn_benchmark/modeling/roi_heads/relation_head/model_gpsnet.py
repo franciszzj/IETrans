@@ -1,6 +1,5 @@
 import copy
 
-# import ipdb
 import torch
 import torch.nn as nn
 
@@ -513,9 +512,6 @@ class GPSNetContext(nn.Module):
                 fused_inst_feat = message + self.inst_feat_down_dim_fcs[t](curr_inst_feats)
 
                 update_inst_feats = self.obj2obj_msg_fuse(fused_inst_feat)
-
-                # if torch.isnan(update_inst_feats).any():
-                #     ipdb.set_trace()
 
                 msp_inst_feats_each_iters.append(update_inst_feats)
 
