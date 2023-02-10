@@ -64,21 +64,23 @@ def train(cfg, local_rank, distributed, logger):
 
     if cfg.MODEL.ATTRIBUTE_ON:
         load_mapping["roi_heads.relation.att_feature_extractor"] = "roi_heads.attribute.feature_extractor"
-        load_mapping[
-            "roi_heads.relation.union_feature_extractor.att_feature_extractor"] = "roi_heads.attribute.feature_extractor"
+        load_mapping["roi_heads.relation.union_feature_extractor.att_feature_extractor"] = "roi_heads.attribute.feature_extractor"
 
     device = torch.device(cfg.MODEL.DEVICE)
     model.to(device)
 
-    num_gpus = int(os.environ["WORLD_SIZE"]) if "WORLD_SIZE" in os.environ else 1
+    num_gpus = int(os.environ["WORLD_SIZE"]
+                   ) if "WORLD_SIZE" in os.environ else 1
     num_batch = cfg.SOLVER.IMS_PER_BATCH
-    optimizer = make_optimizer(cfg, model, logger, slow_heads=slow_heads, slow_ratio=10.0, rl_factor=float(num_batch))
+    optimizer = make_optimizer(
+        cfg, model, logger, slow_heads=slow_heads, slow_ratio=10.0, rl_factor=float(num_batch))
     scheduler = make_lr_scheduler(cfg, optimizer, logger)
     debug_print(logger, 'end optimizer and shcedule')
     # Initialize mixed-precision training
     use_mixed_precision = cfg.DTYPE == "float16"
     amp_opt_level = 'O1' if use_mixed_precision else 'O0'
-    model, optimizer = amp.initialize(model, optimizer, opt_level=amp_opt_level)
+    model, optimizer = amp.initialize(
+        model, optimizer, opt_level=amp_opt_level)
 
     if distributed:
         model = torch.nn.parallel.DistributedDataParallel(
@@ -104,7 +106,8 @@ def train(cfg, local_rank, distributed, logger):
         arguments.update(extra_checkpoint_data)
     else:
         # load_mapping is only used when we init current model from detection model.
-        checkpointer.load(cfg.MODEL.PRETRAINED_DETECTOR_CKPT, with_optim=False, load_mapping=load_mapping)
+        checkpointer.load(cfg.MODEL.PRETRAINED_DETECTOR_CKPT,
+                          with_optim=False, load_mapping=load_mapping)
     debug_print(logger, 'end load checkpointer')
     train_data_loader = make_data_loader(
         cfg,
@@ -114,7 +117,7 @@ def train(cfg, local_rank, distributed, logger):
     )
     debug_print(logger, 'end dataloader')
 
-    logger.info("Start training")
+    logger.info("Start external transfer")
     dic = {}
     to_save = []
     end = False
@@ -160,6 +163,7 @@ def modify_logits(cur_data, rel_logits):
     cur_data['possible_rels'] = rst_possible_rels
     return cur_data
 
+
 def fix_eval_modules(eval_modules):
     for module in eval_modules:
         for _, param in module.named_parameters():
@@ -168,7 +172,8 @@ def fix_eval_modules(eval_modules):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="PyTorch Relation Detection Training")
+    parser = argparse.ArgumentParser(
+        description="PyTorch Relation Detection Training")
     parser.add_argument(
         "--config-file",
         default="",
@@ -192,7 +197,8 @@ def main():
 
     args = parser.parse_args()
 
-    num_gpus = int(os.environ["WORLD_SIZE"]) if "WORLD_SIZE" in os.environ else 1
+    num_gpus = int(os.environ["WORLD_SIZE"]
+                   ) if "WORLD_SIZE" in os.environ else 1
     args.distributed = num_gpus > 1
 
     if args.distributed:

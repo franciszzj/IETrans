@@ -1,6 +1,8 @@
-import json, pickle
+import os
+import sys
+import json
+import pickle
 import numpy as np
-import sys, os
 from tqdm import tqdm
 # extra: ['img_path', 'boxes', 'labels', 'pairs', 'possible_rels', 'rel_logits']
 # intra: ['width', 'height', 'img_path', 'boxes', 'labels', 'relations', 'possible_rels', 'logits']
@@ -8,8 +10,10 @@ from tqdm import tqdm
 exp_dir = os.environ.get("EXP")
 code_dir = os.environ.get("SG")
 model_name = sys.argv[1]
-extra_path = os.path.join(exp_dir, "50/{}/predcls/lt/external/relabel".format(model_name), "em_E.pk")
-intra_path = os.path.join(exp_dir, "50/{}/predcls/lt/internal/relabel".format(model_name), "em_E.pk_topk_0.7")
+extra_path = os.path.join(
+    exp_dir, "50/{}/predcls/lt/external/relabel".format(model_name), "em_E.pk")
+intra_path = os.path.join(
+    exp_dir, "50/{}/predcls/lt/internal/relabel".format(model_name), "em_E.pk_topk_0.7")
 print(extra_path)
 print(intra_path)
 img_info_path = os.path.join(code_dir, "datasets/vg/image_data.json")
@@ -22,6 +26,7 @@ img_infos = {k["image_id"]: k for k in img_infos}
 freq_rels = [0, 31, 20, 22, 30, 48, 29, 50, 1, 21, 8, 43, 40, 49, 41, 23]
 # freq_rels = {r: 0 for r in freq_rels}
 freq_rels = np.array(freq_rels, dtype=np.int64)
+
 
 def get_img_id(path):
     return int(path.split("/")[-1].replace(".jpg", ""))
@@ -78,14 +83,15 @@ def merge_ex_and_in(ex_data, in_data):
     in_rels = in_data["relations"]
     in_pairs = in_rels[:, :2]
     intersect_rels = ex_pairs.reshape(ex_pairs.shape[0], ex_pairs.shape[1], 1) \
-                     == in_pairs.reshape(in_pairs.shape[0], in_pairs.shape[1], 1).T
+        == in_pairs.reshape(in_pairs.shape[0], in_pairs.shape[1], 1).T
     intersect_rels = intersect_rels.all(-1).any(1)
     unintersect_rels = ~intersect_rels
     final_rels = np.concatenate([in_rels, ex_rels[unintersect_rels]], 0)
     in_data["relations"] = final_rels
     return in_data
 
-print("intra", len(intra_data), sum([len(x["relations"]) for x in intra_data]) )
+
+print("intra", len(intra_data), sum([len(x["relations"]) for x in intra_data]))
 
 # to dic
 # extra: ['img_path', 'boxes', 'labels', 'pairs', 'possible_rels', 'rel_logits']
@@ -108,4 +114,5 @@ to_save_data = list(to_save_data.values())
 pickle.dump(to_save_data, open("em_E.pk", "wb"))
 
 # stat relations
-print("saved data:", len(to_save_data), sum([len(x["relations"]) for x in to_save_data]) )
+print("saved data:", len(to_save_data), sum(
+    [len(x["relations"]) for x in to_save_data]))
