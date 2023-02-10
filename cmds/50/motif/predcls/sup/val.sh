@@ -1,5 +1,5 @@
-export SG="."
-export EXP="./work_dirs"
+export SG=$(pwd)
+export EXP=$SG/work_dirs
 
 OUTPATH=$EXP/50/motif/predcls/sup/sup # replace with your own directory
 

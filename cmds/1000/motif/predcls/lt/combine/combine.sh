@@ -1,3 +1,6 @@
+export SG=$(pwd)
+export EXP=$SG/work_dirs
+
 OUTPATH="$EXP/1800/motif/predcls/lt/combine/relabel/$1"
 mkdir -p $OUTPATH
 cd $OUTPATH
