@@ -6,7 +6,7 @@ import copy
 
 
 class DatasetCatalog(object):
-    DATA_DIR = "./datasets/"
+    DATA_DIR = "datasets"  # 这里不能有"./", 否则会造成IETrans/maskrcnn_benchmark/data/datasets/extrans_vg.py(89) assert错误
     DATASETS = {
         "coco_2017_train": {
             "img_dir": "coco/train2017",
