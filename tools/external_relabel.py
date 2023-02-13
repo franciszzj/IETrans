@@ -230,8 +230,20 @@ def main():
     logger.info("Running with config:\n{}".format(cfg))
     # print(args.local_rank)
     file_names = train(cfg, args.local_rank, args.distributed, logger)
-    synchronize()
-    if dist.is_available() and dist.get_rank() == 0:
+    if args.distributed:
+        synchronize()
+        if dist.is_available() and dist.get_rank() == 0:
+            l = []
+            for r in range(num_gpus):
+                s = pickle.load(open("tmp/" + str(r) + ".pk", "rb"))
+                l.extend(s)
+            dic = {}
+            for d in l:
+                dic[d['img_path']] = d
+            rst_l = [dic[k] for k in file_names]
+            save_path = os.path.join(output_dir, "raw_em_E.pk")
+            pickle.dump(rst_l, open(save_path, "wb"))
+    else:
         l = []
         for r in range(num_gpus):
             s = pickle.load(open("tmp/" + str(r) + ".pk", "rb"))
