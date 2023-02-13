@@ -13,7 +13,7 @@ python tools/relation_train_net.py \
   MODEL.ROI_RELATION_HEAD.PREDICTOR TransformerPredictor \
   SOLVER.IMS_PER_BATCH 16 \
   TEST.IMS_PER_BATCH 1 \
-  DTYPE "float16" \
+  DTYPE "float32" \
   SOLVER.MAX_ITER 16000 \
   SOLVER.VAL_PERIOD 2000 \
   SOLVER.CHECKPOINT_PERIOD 2000 \
