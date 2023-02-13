@@ -8,7 +8,7 @@
    Computes ceil(a / b)
 */
 template <typename T>
-__host__ __device__ __forceinline__ T THCCeilDiv(T a, T b) {
+__host__ __device__ __forceinline__ T MyCeilDiv(T a, T b) {
   return (a + b - 1) / b;
 }
 
@@ -17,6 +17,6 @@ __host__ __device__ __forceinline__ T THCCeilDiv(T a, T b) {
    multiple of b
 */
 template <typename T>
-__host__ __device__ __forceinline__ T THCRoundUp(T a, T b) {
-  return THCCeilDiv(a, b) * b;
+__host__ __device__ __forceinline__ T MyRoundUp(T a, T b) {
+  return MyCeilDiv(a, b) * b;
 }
