@@ -6,7 +6,7 @@ mkdir -p $OUTPATH
 cp $EXP/50/motif/predcls/sup/sup/last_checkpoint $OUTPATH/last_checkpoint
 
 python tools/internal_relabel.py \
-  --config-file "configs/wsup-50.yaml"  \
+  --config-file "configs/wsup-50.yaml" \
   DATASETS.TRAIN \(\"50DS_VG_VGKB_train\",\) \
   MODEL.ROI_RELATION_HEAD.USE_GT_BOX True \
   MODEL.ROI_RELATION_HEAD.USE_GT_OBJECT_LABEL True \
