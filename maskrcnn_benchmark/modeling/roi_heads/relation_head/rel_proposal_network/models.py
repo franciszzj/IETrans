@@ -70,8 +70,8 @@ def gt_rel_proposal_matching(proposals, targets, fg_thres, require_overlap):
         tgt_pair_idxs = torch.nonzero(tgt_rel_matrix != 0)
 
         assert tgt_pair_idxs.shape[1] == 2
-        tgt_head_idxs = tgt_pair_idxs[:, 0].contiguous().view(-1)
-        tgt_tail_idxs = tgt_pair_idxs[:, 1].contiguous().view(-1)
+        tgt_head_idxs = tgt_pair_idxs[:, 0].contiguous().long().view(-1)
+        tgt_tail_idxs = tgt_pair_idxs[:, 1].contiguous().long().view(-1)
         tgt_rel_labs = tgt_rel_matrix[tgt_head_idxs, tgt_tail_idxs].contiguous().view(-1)
 
         num_tgt_rels = tgt_rel_labs.shape[0]

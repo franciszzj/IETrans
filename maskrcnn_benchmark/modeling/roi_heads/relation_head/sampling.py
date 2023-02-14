@@ -60,8 +60,8 @@ class RelationSampling(object):
             tgt_rel_matrix = target.get_field("relation") # [tgt, tgt]
             tgt_pair_idxs = torch.nonzero(tgt_rel_matrix > 0)
             assert tgt_pair_idxs.shape[1] == 2
-            tgt_head_idxs = tgt_pair_idxs[:, 0].contiguous().view(-1)
-            tgt_tail_idxs = tgt_pair_idxs[:, 1].contiguous().view(-1)
+            tgt_head_idxs = tgt_pair_idxs[:, 0].contiguous().long().view(-1)
+            tgt_tail_idxs = tgt_pair_idxs[:, 1].contiguous().long().view(-1)
             tgt_rel_labs = tgt_rel_matrix[tgt_head_idxs, tgt_tail_idxs].contiguous().view(-1)
 
             # sym_binary_rels
@@ -148,8 +148,8 @@ class RelationSampling(object):
         """
         tgt_pair_idxs = torch.nonzero(tgt_rel_matrix > 0)
         assert tgt_pair_idxs.shape[1] == 2
-        tgt_head_idxs = tgt_pair_idxs[:, 0].contiguous().view(-1)
-        tgt_tail_idxs = tgt_pair_idxs[:, 1].contiguous().view(-1)
+        tgt_head_idxs = tgt_pair_idxs[:, 0].contiguous().long().view(-1)
+        tgt_tail_idxs = tgt_pair_idxs[:, 1].contiguous().long().view(-1)
         tgt_rel_labs = tgt_rel_matrix[tgt_head_idxs, tgt_tail_idxs].contiguous().view(-1)
 
         num_tgt_rels = tgt_rel_labs.shape[0]
@@ -295,8 +295,8 @@ class WRelationSampling(object):
             #     tgt_soft_labels = target.get_field("relation_soft_labels")
             # print(tgt_pair_idxs.shape)
             assert tgt_pair_idxs.shape[1] == 2
-            tgt_head_idxs = tgt_pair_idxs[:, 0].contiguous().view(-1)
-            tgt_tail_idxs = tgt_pair_idxs[:, 1].contiguous().view(-1)
+            tgt_head_idxs = tgt_pair_idxs[:, 0].contiguous().long().view(-1)
+            tgt_tail_idxs = tgt_pair_idxs[:, 1].contiguous().long().view(-1)
             tgt_rel_labs = target.get_field("relation_labels")
 
             # sym_binary_rels
@@ -404,8 +404,8 @@ class WRelationSampling(object):
         """
         # tgt_pair_idxs = torch.nonzero(tgt_rel_matrix > 0)
         assert tgt_pair_idxs.shape[1] == 2
-        tgt_head_idxs = tgt_pair_idxs[:, 0].contiguous().view(-1)
-        tgt_tail_idxs = tgt_pair_idxs[:, 1].contiguous().view(-1)
+        tgt_head_idxs = tgt_pair_idxs[:, 0].contiguous().long().view(-1)
+        tgt_tail_idxs = tgt_pair_idxs[:, 1].contiguous().long().view(-1)
         tgt_rel_labs = target.get_field("relation_labels")
         # print(tgt_rel_labs)
         # tgt_soft_labs = None

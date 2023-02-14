@@ -369,7 +369,7 @@ class GPSNetContext(nn.Module):
         pairwise_obj_feats_fused = pairwise_obj_feats_fused.view(pairwise_obj_feats_fused.size(0), 2, self.hidden_dim)
         head_rep = pairwise_obj_feats_fused[:, 0].contiguous().view(-1, self.hidden_dim)
         tail_rep = pairwise_obj_feats_fused[:, 1].contiguous().view(-1, self.hidden_dim)
-        obj_pair_feat4rel_rep = torch.cat((head_rep[rel_pair_idxs[:, 0]], tail_rep[rel_pair_idxs[:, 1]]), dim=-1)
+        obj_pair_feat4rel_rep = torch.cat((head_rep[rel_pair_idxs[:, 0].long()], tail_rep[rel_pair_idxs[:, 1].long()]), dim=-1)
         obj_pair_feat4rel_rep = self.pairwise_rel_feat_finalize_fc(obj_pair_feat4rel_rep)  # (num_rel, hidden_dim)
         return obj_pair_feat4rel_rep
 

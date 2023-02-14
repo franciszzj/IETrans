@@ -42,8 +42,8 @@ class AttributeHeadLossComputation(object):
         # generate attribute targets
         attribute_targets, selected_idxs = self.generate_attributes_target(attributes)
 
-        attri_logits = attri_logits[selected_idxs]
-        attribute_targets = attribute_targets[selected_idxs]
+        attri_logits = attri_logits[selected_idxs.long()]
+        attribute_targets = attribute_targets[selected_idxs.long()]
 
         attribute_loss = self.attribute_loss(attri_logits, attribute_targets)
 
