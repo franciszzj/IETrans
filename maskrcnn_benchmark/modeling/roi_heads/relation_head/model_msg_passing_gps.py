@@ -229,8 +229,8 @@ class PairwiseFeatureExtractor(nn.Module):
         pair_bboxs_info = []
 
         for pair_idx, head_rep, tail_rep, obj_box in zip(rel_pair_idxs, head_reps, tail_reps, obj_boxs):
-            obj_pair_feat4rel_rep.append(torch.cat((head_rep[pair_idx[:, 0]], tail_rep[pair_idx[:, 1]]), dim=-1))
-            pair_bboxs_info.append(get_box_pair_info(obj_box[pair_idx[:, 0]], obj_box[pair_idx[:, 1]]))
+            obj_pair_feat4rel_rep.append(torch.cat((head_rep[pair_idx[:, 0].long()], tail_rep[pair_idx[:, 1].long()]), dim=-1))
+            pair_bboxs_info.append(get_box_pair_info(obj_box[pair_idx[:, 0].long()], obj_box[pair_idx[:, 1].long()]))
         pair_bbox_geo_info = cat(pair_bboxs_info, dim=0)
         obj_pair_feat4rel_rep = cat(obj_pair_feat4rel_rep, dim=0)  # (num_rel, hidden_dim * 2)
         if self.spatial_for_vision:

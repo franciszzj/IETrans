@@ -114,8 +114,8 @@ class TransformerPredictor(nn.Module):
         prod_reps = []
         pair_preds = []
         for pair_idx, head_rep, tail_rep, obj_pred in zip(rel_pair_idxs, head_reps, tail_reps, obj_preds):
-            prod_reps.append(torch.cat((head_rep[pair_idx[:,0]], tail_rep[pair_idx[:,1]]), dim=-1))
-            pair_preds.append(torch.stack((obj_pred[pair_idx[:,0]], obj_pred[pair_idx[:,1]]), dim=1))
+            prod_reps.append(torch.cat((head_rep[pair_idx[:,0].long()], tail_rep[pair_idx[:,1].long()]), dim=-1))
+            pair_preds.append(torch.stack((obj_pred[pair_idx[:,0].long()], obj_pred[pair_idx[:,1].long()]), dim=1))
         prod_rep = cat(prod_reps, dim=0)
         pair_pred = cat(pair_preds, dim=0)
 
@@ -199,7 +199,7 @@ class IMPPredictor(nn.Module):
 
             pair_preds = []
             for pair_idx, obj_pred in zip(rel_pair_idxs, obj_preds):
-                pair_preds.append( torch.stack((obj_pred[pair_idx[:,0]], obj_pred[pair_idx[:,1]]), dim=1) )
+                pair_preds.append( torch.stack((obj_pred[pair_idx[:,0].long()], obj_pred[pair_idx[:,1].long()]), dim=1) )
             pair_pred = cat(pair_preds, dim=0)
 
             rel_dists = rel_dists + self.freq_bias.index_with_labels(pair_pred.long())
@@ -300,8 +300,8 @@ class MotifPredictor(nn.Module):
         prod_reps = []
         pair_preds = []
         for pair_idx, head_rep, tail_rep, obj_pred in zip(rel_pair_idxs, head_reps, tail_reps, obj_preds):
-            prod_reps.append( torch.cat((head_rep[pair_idx[:,0]], tail_rep[pair_idx[:,1]]), dim=-1) )
-            pair_preds.append( torch.stack((obj_pred[pair_idx[:,0]], obj_pred[pair_idx[:,1]]), dim=1) )
+            prod_reps.append( torch.cat((head_rep[pair_idx[:,0].long()], tail_rep[pair_idx[:,1].long()]), dim=-1) )
+            pair_preds.append( torch.stack((obj_pred[pair_idx[:,0].long()], obj_pred[pair_idx[:,1].long()]), dim=1) )
         prod_rep = cat(prod_reps, dim=0)
         pair_pred = cat(pair_preds, dim=0)
 
@@ -470,7 +470,7 @@ class GPSNetPredictor(nn.Module):
             pair_preds = []
             for pair_idx, obj_pred in zip(rel_pair_idxs, obj_pred_labels):
                 pair_preds.append(
-                    torch.stack((obj_pred[pair_idx[:, 0]], obj_pred[pair_idx[:, 1]]), dim=1)
+                    torch.stack((obj_pred[pair_idx[:, 0].long()], obj_pred[pair_idx[:, 1].long()]), dim=1)
                 )
             pair_pred = cat(pair_preds, dim=0)
             rel_cls_logits = rel_cls_logits + self.freq_bias.index_with_labels(
@@ -569,8 +569,8 @@ class VCTreePredictor(nn.Module):
         prod_reps = []
         pair_preds = []
         for pair_idx, head_rep, tail_rep, obj_pred in zip(rel_pair_idxs, head_reps, tail_reps, obj_preds):
-            prod_reps.append( torch.cat((head_rep[pair_idx[:,0]], tail_rep[pair_idx[:,1]]), dim=-1) )
-            pair_preds.append( torch.stack((obj_pred[pair_idx[:,0]], obj_pred[pair_idx[:,1]]), dim=1) )
+            prod_reps.append( torch.cat((head_rep[pair_idx[:,0].long()], tail_rep[pair_idx[:,1].long()]), dim=-1) )
+            pair_preds.append( torch.stack((obj_pred[pair_idx[:,0].long()], obj_pred[pair_idx[:,1].long()]), dim=1) )
         prod_rep = cat(prod_reps, dim=0)
         pair_pred = cat(pair_preds, dim=0)
 
@@ -717,12 +717,12 @@ class CausalAnalysisPredictor(nn.Module):
         pair_bboxs_info = []
         for pair_idx, head_rep, tail_rep, obj_pred, obj_box, obj_prob in zip(rel_pair_idxs, head_reps, tail_reps, obj_preds, obj_boxs, obj_prob_list):
             if self.use_vtranse:
-                ctx_reps.append( head_rep[pair_idx[:,0]] - tail_rep[pair_idx[:,1]] )
+                ctx_reps.append( head_rep[pair_idx[:,0].long()] - tail_rep[pair_idx[:,1].long()] )
             else:
-                ctx_reps.append( torch.cat((head_rep[pair_idx[:,0]], tail_rep[pair_idx[:,1]]), dim=-1) )
-            pair_preds.append( torch.stack((obj_pred[pair_idx[:,0]], obj_pred[pair_idx[:,1]]), dim=1) )
-            pair_obj_probs.append( torch.stack((obj_prob[pair_idx[:,0]], obj_prob[pair_idx[:,1]]), dim=2) )
-            pair_bboxs_info.append( get_box_pair_info(obj_box[pair_idx[:,0]], obj_box[pair_idx[:,1]]) )
+                ctx_reps.append( torch.cat((head_rep[pair_idx[:,0].long()], tail_rep[pair_idx[:,1].long()]), dim=-1) )
+            pair_preds.append( torch.stack((obj_pred[pair_idx[:,0].long()], obj_pred[pair_idx[:,1].long()]), dim=1) )
+            pair_obj_probs.append( torch.stack((obj_prob[pair_idx[:,0].long()], obj_prob[pair_idx[:,1].long()]), dim=2) )
+            pair_bboxs_info.append( get_box_pair_info(obj_box[pair_idx[:,0].long()], obj_box[pair_idx[:,1].long()]) )
         pair_obj_probs = cat(pair_obj_probs, dim=0)
         pair_bbox = cat(pair_bboxs_info, dim=0)
         pair_pred = cat(pair_preds, dim=0)

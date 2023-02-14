@@ -61,8 +61,8 @@ class RelationFeatureExtractor(nn.Module):
         union_proposals = []
         rect_inputs = []
         for proposal, rel_pair_idx in zip(proposals, rel_pair_idxs):
-            head_proposal = proposal[rel_pair_idx[:, 0]]
-            tail_proposal = proposal[rel_pair_idx[:, 1]]
+            head_proposal = proposal[rel_pair_idx[:, 0].long()]
+            tail_proposal = proposal[rel_pair_idx[:, 1].long()]
             union_proposal = boxlist_union(head_proposal, tail_proposal)
             union_proposals.append(union_proposal)
 
@@ -114,8 +114,8 @@ class RelationFeatureExtractor(nn.Module):
         union_proposals = []
         rect_inputs = []
         for proposal, rel_pair_idx in zip(proposals, rel_pair_idxs):
-            head_proposal = proposal[rel_pair_idx[:, 0]]
-            tail_proposal = proposal[rel_pair_idx[:, 1]]
+            head_proposal = proposal[rel_pair_idx[:, 0].long()]
+            tail_proposal = proposal[rel_pair_idx[:, 1].long()]
             union_proposal = boxlist_union(head_proposal, tail_proposal)
             union_proposals.append(union_proposal)
 
@@ -160,8 +160,8 @@ class RelationFeatureExtractor(nn.Module):
         union_proposals = []
         rect_inputs = []
         for proposal, rel_pair_idx in zip(proposals, rel_pair_idxs):
-            head_proposal = proposal[rel_pair_idx[:, 0]]
-            tail_proposal = proposal[rel_pair_idx[:, 1]]
+            head_proposal = proposal[rel_pair_idx[:, 0].long()]
+            tail_proposal = proposal[rel_pair_idx[:, 1].long()]
             union_proposal = boxlist_union(head_proposal, tail_proposal)
             union_proposals.append(union_proposal)
 

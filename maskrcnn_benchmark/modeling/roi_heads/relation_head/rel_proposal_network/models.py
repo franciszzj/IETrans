@@ -193,33 +193,33 @@ class RelationProposalModel(nn.Module):
         )  # the resampling ignored gt will be ignored by relpn too
         # gt_pair_idx = squeeze_tensor(torch.nonzero(rel_label != 0))
 
-        supervision_mat[pair_idx[gt_pair_idx, 0], pair_idx[gt_pair_idx, 1]] = 1
-        supervision_mat[pair_idx[gt_pair_idx, 1], pair_idx[gt_pair_idx, 0]] = 1
+        supervision_mat[pair_idx[gt_pair_idx, 0].long(), pair_idx[gt_pair_idx, 1].long()] = 1
+        supervision_mat[pair_idx[gt_pair_idx, 1].long(), pair_idx[gt_pair_idx, 0].long()] = 1
 
         # foreground object pairs, here may have some partial labels, we give a soft labels
         fg_box_pair_idx = squeeze_tensor(
             torch.nonzero((fg_box_pair_matrixs - supervision_mat) == 1)
         )
-        supervision_mat[fg_box_pair_idx[:, 0], fg_box_pair_idx[:, 1]] = 0.2
-        supervision_mat[fg_box_pair_idx[:, 1], fg_box_pair_idx[:, 0]] = 0.2
+        supervision_mat[fg_box_pair_idx[:, 0].long(), fg_box_pair_idx[:, 1].long()] = 0.2
+        supervision_mat[fg_box_pair_idx[:, 1].long(), fg_box_pair_idx[:, 0].long()] = 0.2
         # totally background pairs
         bg_pair_idx = squeeze_tensor(torch.nonzero(supervision_mat == 0))
         prop_scores = proposal.get_field("pred_scores")
 
         fg_box_pair_num = fg_box_pair_idx.shape[0]
         perm = torch.randperm(fg_box_pair_num)[: fg_box_pair_num // 2]
-        selected_fg_box_pair_idx = fg_box_pair_idx[perm].to(bg_pair_idx.device)
+        selected_fg_box_pair_idx = fg_box_pair_idx[perm].to(bg_pair_idx.device).long()
 
         # selected the bg pairs, we take the high quality negative boxes pairs as the
         # negative samples
-        proposals_quality = prop_scores[bg_pair_idx[:, 0]] * prop_scores[bg_pair_idx[:, 1]]
+        proposals_quality = prop_scores[bg_pair_idx[:, 0].long()] * prop_scores[bg_pair_idx[:, 1].long()]
         _, sorted_idx = torch.sort(proposals_quality, descending=True)
         bg_pair_num = gt_pair_idx.shape[0]
         bg_pair_num = bg_pair_num if bg_pair_num > 10 else 10
         bg_pair_idx = bg_pair_idx[sorted_idx][: int(bg_pair_num * 2)]
         # random select from a larger range
         perm = torch.randperm(bg_pair_idx.shape[0])[:bg_pair_num]
-        bg_pair_idx = bg_pair_idx[perm]
+        bg_pair_idx = bg_pair_idx[perm].long()
 
         if self.ignore_fg_pairs:
             selected_pair_idx = torch.cat(
@@ -239,7 +239,7 @@ class RelationProposalModel(nn.Module):
 
         return (
             selected_pair_idx,
-            supervision_mat[selected_pair_idx[:, 0], selected_pair_idx[:, 1]],
+            supervision_mat[selected_pair_idx[:, 0].long(), selected_pair_idx[:, 1].long()],
         )
 
     def forward(
@@ -289,10 +289,10 @@ class RelationProposalModel(nn.Module):
             # inst_logtis_embed = self.inst_logtis_embed(pred_logits)
             rel_prop_repre = torch.cat(
                 (
-                    pos_embed[pair_idx[:, 0]],
-                    obj_sem_embed[pair_idx[:, 0]],
-                    pos_embed[pair_idx[:, 1]],
-                    obj_sem_embed[pair_idx[:, 1]],
+                    pos_embed[pair_idx[:, 0].long()],
+                    obj_sem_embed[pair_idx[:, 0].long()],
+                    pos_embed[pair_idx[:, 1].long()],
+                    obj_sem_embed[pair_idx[:, 1].long()],
                 ),
                 dim=1,
             )
@@ -308,7 +308,7 @@ class RelationProposalModel(nn.Module):
                     obj_roi_feat, obj_roi_feat, obj_roi_feat
                 ).squeeze(1)
                 visual_relness_scores = torch.mm(sub_roi_feat, obj_roi_feat.t())  # k x k
-                visual_relness_scores = visual_relness_scores[pair_idx[:, 0], pair_idx[:, 1]]
+                visual_relness_scores = visual_relness_scores[pair_idx[:, 0].long(), pair_idx[:, 1].long()]
                 relness += visual_relness_scores
 
             # calculate loss by gt_matching
@@ -321,7 +321,7 @@ class RelationProposalModel(nn.Module):
                     losses.append(loss)
 
                 relness = torch.sigmoid(relness)
-                pred_rel_matrix[pair_idx[:, 0], pair_idx[:, 1]] = relness
+                pred_rel_matrix[pair_idx[:, 0].long(), pair_idx[:, 1].long()] = relness
 
                 # add the gt pair on prediction in training phrase for more stable training
                 prop_relatedness_matrixs.append(
@@ -330,7 +330,7 @@ class RelationProposalModel(nn.Module):
             else:
 
                 relness = torch.sigmoid(relness)
-                pred_rel_matrix[pair_idx[:, 0], pair_idx[:, 1]] = relness
+                pred_rel_matrix[pair_idx[:, 0].long(), pair_idx[:, 1].long()] = relness
 
                 prop_relatedness_matrixs.append(pred_rel_matrix)
 
@@ -474,10 +474,10 @@ class PreClassifierInstFeatureRelPN(nn.Module):
             # inst_logtis_embed = self.inst_logtis_embed(pred_logits)
             rel_prop_repre = torch.cat(
                 (
-                    pos_embed[pair_idx[:, 0]],
-                    obj_sem_embed[pair_idx[:, 0]],
-                    pos_embed[pair_idx[:, 1]],
-                    obj_sem_embed[pair_idx[:, 1]],
+                    pos_embed[pair_idx[:, 0].long()],
+                    obj_sem_embed[pair_idx[:, 0].long()],
+                    pos_embed[pair_idx[:, 1].long()],
+                    obj_sem_embed[pair_idx[:, 1].long()],
                 ),
                 dim=1,
             )
@@ -494,8 +494,8 @@ class PreClassifierInstFeatureRelPN(nn.Module):
                 ).squeeze(1)
 
                 visual_relness_feat = torch.index_select(
-                    sub_roi_feat, 0, pair_idx[:, 0]
-                ) * torch.index_select(obj_roi_feat, 0, pair_idx[:, 1])
+                    sub_roi_feat, 0, pair_idx[:, 0].long()
+                ) * torch.index_select(obj_roi_feat, 0, pair_idx[:, 1].long())
 
                 visual_relness_logits = self.proposal_relness_cls_vis_feat_fc(
                     visual_relness_feat
@@ -505,9 +505,9 @@ class PreClassifierInstFeatureRelPN(nn.Module):
 
             relness_scores = torch.sigmoid(relness_logits)
             if self.binary_predictor:
-                pred_rel_matrix[pair_idx[:, 0], pair_idx[:, 1]] = relness_scores
+                pred_rel_matrix[pair_idx[:, 0].long(), pair_idx[:, 1].long()] = relness_scores
             else:
-                pred_rel_matrix[pair_idx[:, 0], pair_idx[:, 1]] = relness_scores.max(dim=1)[0]
+                pred_rel_matrix[pair_idx[:, 0].long(), pair_idx[:, 1].long()] = relness_scores.max(dim=1)[0]
 
             relness_logits_batch.append(relness_logits)
             relness_matrix.append(pred_rel_matrix)
@@ -572,8 +572,8 @@ class GRCNNRelProp(nn.Module):
             obj_prob = F.softmax(pred_logits, dim=1) 
             obj_pair_prob = torch.cat(
                 (
-                    self.sub_fc(obj_prob[pair_idx[:, 0]]),
-                    self.obj_fc(obj_prob[pair_idx[:, 1]]),
+                    self.sub_fc(obj_prob[pair_idx[:, 0].long()]),
+                    self.obj_fc(obj_prob[pair_idx[:, 1].long()]),
                 ),
                 dim=1,
             )
@@ -583,7 +583,7 @@ class GRCNNRelProp(nn.Module):
             relness_logits = squeeze_tensor(relness_logits)
 
             relness_scores = squeeze_tensor(torch.sigmoid(relness_logits))
-            pred_rel_matrix[pair_idx[:, 0], pair_idx[:, 1]] = relness_scores
+            pred_rel_matrix[pair_idx[:, 0].long(), pair_idx[:, 1].long()] = relness_scores
 
             relness_logits_batch.append(relness_logits)
             relness_matrix.append(pred_rel_matrix)
@@ -703,10 +703,10 @@ class RelAwareRelFeature(nn.Module):
             obj_sem_embed = F.softmax(pred_logits, dim=1) @ self.obj_sem_embed.weight
             rel_pair_symb_repre = torch.cat(
                 (
-                    pos_embed[pair_idx[:, 0]],
-                    obj_sem_embed[pair_idx[:, 0]],
-                    pos_embed[pair_idx[:, 1]],
-                    obj_sem_embed[pair_idx[:, 1]],
+                    pos_embed[pair_idx[:, 0].long()],
+                    obj_sem_embed[pair_idx[:, 0].long()],
+                    pos_embed[pair_idx[:, 1].long()],
+                    obj_sem_embed[pair_idx[:, 1].long()],
                 ),
                 dim=1,
             )
@@ -729,13 +729,13 @@ class RelAwareRelFeature(nn.Module):
                 relness_bin_logits = self.fusion_layer(relness_logits)
 
                 relness_scores = squeeze_tensor(torch.sigmoid(relness_bin_logits))
-                pred_rel_matrix[pair_idx[:, 0], pair_idx[:, 1]] = relness_scores
+                pred_rel_matrix[pair_idx[:, 0].long(), pair_idx[:, 1].long()] = relness_scores
 
                 relness_logits = torch.cat((relness_logits.view(-1, relness_logits.size(-1)),
                                             relness_bin_logits.view(-1, relness_bin_logits.size(-1))), dim=1)
             elif self.predictor_type == "single":
                 relness_scores = squeeze_tensor(torch.sigmoid(relness_logits))
-                pred_rel_matrix[pair_idx[:, 0], pair_idx[:, 1]] = relness_scores.max(dim=1)[0]
+                pred_rel_matrix[pair_idx[:, 0].long(), pair_idx[:, 1].long()] = relness_scores.max(dim=1)[0]
 
             relness_logits_batch.append(relness_logits)
 

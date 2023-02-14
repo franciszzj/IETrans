@@ -107,8 +107,8 @@ class PostProcessor(nn.Module):
                 boxlist.add_field('pred_attributes', att_prob)
             
             # sorting triples according to score production
-            obj_scores0 = obj_scores[rel_pair_idx[:, 0]]
-            obj_scores1 = obj_scores[rel_pair_idx[:, 1]]
+            obj_scores0 = obj_scores[rel_pair_idx[:, 0].long()]
+            obj_scores1 = obj_scores[rel_pair_idx[:, 1].long()]
             if self.rel_inference == "SOFTMAX":
                 rel_class_prob = F.softmax(rel_logit, -1)
             else:

@@ -90,8 +90,8 @@ class MessageGenerator(nn.Module):
         def masked_softmax(weighting_gate, rel_pair_idx):
             atten_mat_ex = torch.zeros((n_nodes, n_nodes), dtype=source_features.dtype, device=source_features.device)
             atten_mat_mask = torch.zeros((n_nodes, n_nodes), dtype=source_features.dtype, device=source_features.device)
-            atten_mat_mask[rel_pair_idx[:, 0], rel_pair_idx[:, 1]] = 1.
-            atten_mat_ex[rel_pair_idx[:, 0], rel_pair_idx[:, 1]] = weighting_gate
+            atten_mat_mask[rel_pair_idx[:, 0].long(), rel_pair_idx[:, 1].long()] = 1.
+            atten_mat_ex[rel_pair_idx[:, 0].long(), rel_pair_idx[:, 1].long()] = weighting_gate
 
             atten_mat_ex = (atten_mat_ex - atten_mat_ex.max()).exp() * atten_mat_mask  # e^x of each position in vaild pairs
             atten_mat = atten_mat_ex / (atten_mat_ex.sum(1).unsqueeze(1) + 1e-6)
@@ -102,8 +102,8 @@ class MessageGenerator(nn.Module):
         def masked_sigmoid(weighting_gate, rel_pair_idx):
             atten_mat_ex = torch.zeros((n_nodes, n_nodes), dtype=source_features.dtype, device=source_features.device)
             atten_mat_mask = torch.zeros((n_nodes, n_nodes), dtype=source_features.dtype, device=source_features.device)
-            atten_mat_mask[rel_pair_idx[:, 0], rel_pair_idx[:, 1]] = 1.
-            atten_mat_ex[rel_pair_idx[:, 0], rel_pair_idx[:, 1]] = weighting_gate
+            atten_mat_mask[rel_pair_idx[:, 0].long(), rel_pair_idx[:, 1].long()] = 1.
+            atten_mat_ex[rel_pair_idx[:, 0].long(), rel_pair_idx[:, 1].long()] = weighting_gate
 
             atten_mat = torch.sigmoid(atten_mat_ex) * atten_mat_mask
             return atten_mat
@@ -113,7 +113,7 @@ class MessageGenerator(nn.Module):
         # apply the relness scores
         if relness_score is not None:
             relness_mat = torch.zeros((n_nodes, n_nodes), dtype=source_features.dtype, device=source_features.device)
-            relness_mat[rel_pair_idx[:, 0], rel_pair_idx[:, 1]] = relness_score
+            relness_mat[rel_pair_idx[:, 0].long(), rel_pair_idx[:, 1].long()] = relness_score
             atten_mat *= relness_mat
 
         # bidirectional msp attention
@@ -353,8 +353,8 @@ class GPSNetContext(nn.Module):
         :return:
         """
 
-        source_indices = rel_pair_idx[:, 1]
-        target_indices = rel_pair_idx[:, 0]
+        source_indices = rel_pair_idx[:, 1].long()
+        target_indices = rel_pair_idx[:, 0].long()
 
         source_f = torch.index_select(source_features, 0, source_indices)
         target_f = torch.index_select(target_features, 0, target_indices)
@@ -385,8 +385,8 @@ class GPSNetContext(nn.Module):
 
         if self.filter_the_mp_instance:
             # here we only pass massage from the fg boxes to the predicates
-            valid_sub_inst_in_pairs = valid_inst_idx[indices_sub]
-            valid_obj_inst_in_pairs = valid_inst_idx[indices_obj]
+            valid_sub_inst_in_pairs = valid_inst_idx[indices_sub].long()
+            valid_obj_inst_in_pairs = valid_inst_idx[indices_obj].long()
             valid_inst_pair_inds = squeeze_tensor(((valid_sub_inst_in_pairs) & (valid_obj_inst_in_pairs)).nonzero())
             # num_rel(vaild rel pair idx), 1
 
