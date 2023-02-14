@@ -333,8 +333,8 @@ class GPSNetContext(nn.Module):
         obj_pred_map = rel_inds.new(sum(num_proposals), rel_inds.shape[0]).fill_(0).float().detach()
         # only message passing on valid pairs
 
-        subj_pred_map.scatter_(0, (rel_inds[:, 0].contiguous().view(1, -1)), 1)
-        obj_pred_map.scatter_(0, (rel_inds[:, 1].contiguous().view(1, -1)), 1)
+        subj_pred_map.scatter_(0, (rel_inds[:, 0].contiguous().long().view(1, -1)), 1)
+        obj_pred_map.scatter_(0, (rel_inds[:, 1].contiguous().long().view(1, -1)), 1)
         rel_prop_pairs_relness_batch_cat = None
         selected_rel_prop_pairs_idx = torch.arange(len(rel_inds), dtype=torch.int64).to(rel_inds.device)
 

@@ -185,8 +185,8 @@ class RelationSampling(object):
             if num_match_head <= 0 or num_match_tail <= 0:
                 continue
             # all combination pairs
-            prp_head_idxs = prp_head_idxs.view(-1,1).expand(num_match_head,num_match_tail).contiguous().view(-1)
-            prp_tail_idxs = prp_tail_idxs.view(1,-1).expand(num_match_head,num_match_tail).contiguous().view(-1)
+            prp_head_idxs = prp_head_idxs.view(-1,1).expand(num_match_head,num_match_tail).contiguous().long().view(-1)
+            prp_tail_idxs = prp_tail_idxs.view(1,-1).expand(num_match_head,num_match_tail).contiguous().long().view(-1)
             valid_pair = prp_head_idxs != prp_tail_idxs
             if valid_pair.sum().item() <= 0:
                 continue
@@ -446,8 +446,8 @@ class WRelationSampling(object):
             if num_match_head <= 0 or num_match_tail <= 0:
                 continue
             # all combination pairs
-            prp_head_idxs = prp_head_idxs.view(-1, 1).expand(num_match_head, num_match_tail).contiguous().view(-1)
-            prp_tail_idxs = prp_tail_idxs.view(1, -1).expand(num_match_head, num_match_tail).contiguous().view(-1)
+            prp_head_idxs = prp_head_idxs.view(-1, 1).expand(num_match_head, num_match_tail).contiguous().long().view(-1)
+            prp_tail_idxs = prp_tail_idxs.view(1, -1).expand(num_match_head, num_match_tail).contiguous().long().view(-1)
             valid_pair = prp_head_idxs != prp_tail_idxs
             if valid_pair.sum().item() <= 0:
                 continue
