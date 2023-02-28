@@ -1,7 +1,7 @@
 export SG=$(pwd)
 export EXP=$SG/work_dirs
 
-OUTPATH=$EXP/50/transformer/predcls/lt/combine/combine
+OUTPATH=$EXP/50/transformer/sgcls/lt/combine/combine
 mkdir -p $OUTPATH
 cp $EXP/50/transformer/predcls/lt/combine/relabel/em_E.pk $OUTPATH/em_E.pk
 
@@ -9,12 +9,11 @@ python tools/relation_train_net.py \
   --config-file "configs/wsup-50.yaml" \
   DATASETS.TRAIN \(\"50DS_VG_VGKB_train\",\) \
   MODEL.ROI_RELATION_HEAD.USE_GT_BOX True \
-  MODEL.ROI_RELATION_HEAD.USE_GT_OBJECT_LABEL True \
+  MODEL.ROI_RELATION_HEAD.USE_GT_OBJECT_LABEL False \
   MODEL.ROI_RELATION_HEAD.PREDICTOR TransformerPredictor \
   SOLVER.IMS_PER_BATCH 16 \
   TEST.IMS_PER_BATCH 1 \
-  DTYPE "float32" \
-  SOLVER.MAX_ITER 16000 \
+  DTYPE "float32" SOLVER.MAX_ITER 16000 \
   SOLVER.VAL_PERIOD 2000 \
   SOLVER.CHECKPOINT_PERIOD 2000 \
   GLOVE_DIR $SG/datasets/glove \
@@ -25,6 +24,8 @@ python tools/relation_train_net.py \
   MODEL.ROI_RELATION_HEAD.PREDICT_USE_BIAS True \
   TEST.INFERENCE "SOFTMAX" \
   IETRANS.RWT False \
+  SOLVER.SCHEDULE.TYPE WarmupMultiStepLR \
+  SOLVER.BASE_LR 0.001 \
   WSUPERVISE.LOSS_TYPE ce \
   WSUPERVISE.DATASET InTransDataset \
   WSUPERVISE.SPECIFIED_DATA_FILE $OUTPATH/em_E.pk
