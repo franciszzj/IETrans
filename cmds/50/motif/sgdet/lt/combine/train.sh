@@ -1,15 +1,15 @@
 export SG=$(pwd)
 export EXP=$SG/work_dirs
 
-OUTPATH=$EXP/50/motif/predcls/lt/combine/combine
+OUTPATH=$EXP/50/motif/sgdet/lt/combine/combine
 mkdir -p $OUTPATH
 cp $EXP/50/motif/predcls/lt/combine/relabel/em_E.pk $OUTPATH/em_E.pk
 
 python tools/relation_train_net.py \
   --config-file "configs/wsup-50.yaml" \
   DATASETS.TRAIN \(\"50DS_VG_VGKB_train\",\) \
-  MODEL.ROI_RELATION_HEAD.USE_GT_BOX True \
-  MODEL.ROI_RELATION_HEAD.USE_GT_OBJECT_LABEL True \
+  MODEL.ROI_RELATION_HEAD.USE_GT_BOX False \
+  MODEL.ROI_RELATION_HEAD.USE_GT_OBJECT_LABEL False \
   MODEL.ROI_RELATION_HEAD.PREDICTOR MotifPredictor \
   SOLVER.IMS_PER_BATCH 12 \
   TEST.IMS_PER_BATCH 1 \

@@ -1,16 +1,16 @@
 export SG=$(pwd)
 export EXP=$SG/work_dirs
 
-OUTPATH=$EXP/50/motif/predcls/lt/combine/combine
+OUTPATH=$EXP/50/gpsnet/sgcls/lt/combine/combine
 mkdir -p $OUTPATH
-cp $EXP/50/motif/predcls/lt/combine/relabel/em_E.pk $OUTPATH/em_E.pk
+cp $EXP/50/gpsnet/predcls/lt/combine/relabel/em_E.pk $OUTPATH/em_E.pk
 
 python tools/relation_train_net.py \
   --config-file "configs/wsup-50.yaml" \
   DATASETS.TRAIN \(\"50DS_VG_VGKB_train\",\) \
   MODEL.ROI_RELATION_HEAD.USE_GT_BOX True \
-  MODEL.ROI_RELATION_HEAD.USE_GT_OBJECT_LABEL True \
-  MODEL.ROI_RELATION_HEAD.PREDICTOR MotifPredictor \
+  MODEL.ROI_RELATION_HEAD.USE_GT_OBJECT_LABEL False \
+  MODEL.ROI_RELATION_HEAD.PREDICTOR GPSNetPredictor \
   SOLVER.IMS_PER_BATCH 12 \
   TEST.IMS_PER_BATCH 1 \
   DTYPE "float32" \

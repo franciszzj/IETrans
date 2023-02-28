@@ -1,7 +1,7 @@
 export SG=$(pwd)
 export EXP=$SG/work_dirs
 
-OUTPATH=$EXP/50/vctree/predcls/lt/combine/org
+OUTPATH=$EXP/50/vctree/predcls/lt/combine/combine
 mkdir -p $OUTPATH
 cp $EXP/50/vctree/predcls/lt/combine/relabel/em_E.pk $OUTPATH/em_E.pk
 

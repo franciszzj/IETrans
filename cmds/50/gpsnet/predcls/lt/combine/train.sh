@@ -1,7 +1,7 @@
 export SG=$(pwd)
 export EXP=$SG/work_dirs
 
-OUTPATH=$EXP/50/gpsnet/predcls/lt/combine/org
+OUTPATH=$EXP/50/gpsnet/predcls/lt/combine/combine
 mkdir -p $OUTPATH
 cp $EXP/50/gpsnet/predcls/lt/combine/relabel/em_E.pk $OUTPATH/em_E.pk
 
@@ -19,7 +19,7 @@ python tools/relation_train_net.py \
   SOLVER.CHECKPOINT_PERIOD 2000 \
   GLOVE_DIR $SG/datasets/glove \
   MODEL.PRETRAINED_DETECTOR_CKPT $SG/datasets/vg/pretrained_faster_rcnn/model_final.pth \
-  OUTPUT_DIR $OUTPATH  \
+  OUTPUT_DIR $OUTPATH \
   MODEL.ROI_RELATION_HEAD.NUM_CLASSES 51 \
   SOLVER.PRE_VAL False \
   MODEL.ROI_RELATION_HEAD.PREDICT_USE_BIAS True \
